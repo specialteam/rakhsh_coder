@@ -1,0 +1,126 @@
+<!doctype html>
+<html lang="fa" dir="rtl">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <meta http-equiv="Content-Security-Policy" content="default-src 'self'; script-src 'self'; style-src 'self'; img-src 'self' data:; connect-src 'self'; object-src 'none'; base-uri 'none'; form-action 'self'">
+  <title>دستیار</title>
+  <link rel="icon" href="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 32 32'%3E%3Crect width='32' height='32' rx='8' fill='%232f6fed'/%3E%3Cpath d='M9 22V10h7a6 6 0 0 1 0 12z' fill='none' stroke='white' stroke-width='3' stroke-linejoin='round'/%3E%3C/svg%3E">
+  <link rel="stylesheet" href="style.css">
+</head>
+<body>
+
+<div id="login" class="login" hidden>
+  <form id="login-form" class="login-card">
+    <h1>دستیار</h1>
+    <p>برای ورود، توکن دسترسی را وارد کنید.</p>
+    <input id="login-token" type="password" autocomplete="current-password" dir="ltr" placeholder="DASTYAR_TOKEN" required>
+    <button class="btn primary" type="submit">ورود</button>
+    <p id="login-error" class="error" role="alert"></p>
+  </form>
+</div>
+
+<div id="app" class="app" hidden>
+  <aside id="sidebar" class="sidebar" aria-label="گفتگوها">
+    <div class="side-head">
+      <div class="brand"><span class="logo" aria-hidden="true">د</span><span>دستیار</span></div>
+      <button id="new-chat" class="btn primary small" type="button">+ گفتگوی جدید</button>
+    </div>
+    <form id="search-form" class="search" role="search">
+      <input id="search" type="search" placeholder="جستجو در گفتگوها…" aria-label="جستجو در گفتگوها">
+    </form>
+    <ul id="sessions" class="sessions"></ul>
+    <div class="side-foot">
+      <button id="open-memory" class="btn ghost" type="button">🧠 حافظه</button>
+      <button id="open-skills" class="btn ghost" type="button">🛠 مهارت‌ها</button>
+      <button id="open-settings" class="btn ghost" type="button">⚙ تنظیمات</button>
+      <button id="toggle-theme" class="btn ghost" type="button" aria-label="تغییر تم">◐</button>
+    </div>
+  </aside>
+  <div id="scrim" class="scrim" hidden></div>
+
+  <main class="main">
+    <header class="topbar">
+      <button id="burger" class="btn ghost icon" type="button" aria-label="منو">☰</button>
+      <h2 id="chat-title" class="chat-title" dir="auto">گفتگوی جدید</h2>
+      <label class="model-pick">مدل
+        <select id="model-select" dir="ltr"></select>
+      </label>
+      <span id="approval-badge" class="badge" title="حالت تأیید دستورها"></span>
+    </header>
+
+    <div id="messages" class="messages" role="log" aria-live="polite"></div>
+    <div id="banner" class="banner" role="status" hidden></div>
+
+    <form id="composer" class="composer">
+      <textarea id="input" rows="1" dir="auto" placeholder="پیام خود را بنویسید… (Enter ارسال، Shift+Enter خط جدید)" aria-label="پیام"></textarea>
+      <button id="send" class="btn primary" type="submit">ارسال</button>
+      <button id="stop" class="btn danger" type="button" hidden>توقف</button>
+    </form>
+  </main>
+</div>
+
+<dialog id="dlg-settings" class="dlg">
+  <form method="dialog" class="dlg-body">
+    <h3>تنظیمات</h3>
+    <label class="field">حالت تأیید دستورها
+      <select id="set-approval">
+        <option value="dangerous">فقط دستورهای خطرناک (پیشنهادی)</option>
+        <option value="always">همیشه بپرس</option>
+        <option value="never">هرگز نپرس</option>
+      </select>
+    </label>
+    <p class="hint" id="approval-hint"></p>
+    <label class="field">مدل پیش‌فرض گفتگوهای جدید
+      <select id="set-model" dir="ltr"></select>
+    </label>
+    <p id="settings-error" class="error" role="alert"></p>
+    <div class="dlg-actions">
+      <button id="settings-save" class="btn primary" type="button">ذخیره</button>
+      <button class="btn" value="cancel">بستن</button>
+    </div>
+  </form>
+</dialog>
+
+<dialog id="dlg-memory" class="dlg wide">
+  <form method="dialog" class="dlg-body">
+    <h3>حافظه</h3>
+    <p class="hint">این متن‌ها در ابتدای هر گفتگو به ایجنت داده می‌شوند. هر پاراگراف (با یک خط خالی جدا) یک یادداشت است. ایجنت هم خودش آن‌ها را به‌روز می‌کند.</p>
+    <label class="field">دربارهٔ شما (USER) <span id="mem-user-count" class="count"></span>
+      <textarea id="mem-user" rows="6" dir="auto"></textarea>
+    </label>
+    <label class="field">یادداشت‌های ایجنت (MEMORY) <span id="mem-memory-count" class="count"></span>
+      <textarea id="mem-memory" rows="8" dir="auto"></textarea>
+    </label>
+    <p id="memory-error" class="error" role="alert"></p>
+    <div class="dlg-actions">
+      <button id="memory-save" class="btn primary" type="button">ذخیره</button>
+      <button class="btn" value="cancel">بستن</button>
+    </div>
+  </form>
+</dialog>
+
+<dialog id="dlg-skills" class="dlg wide">
+  <form method="dialog" class="dlg-body">
+    <h3>مهارت‌ها</h3>
+    <p class="hint">روش‌هایی که ایجنت از کارهای قبلی یاد گرفته و ذخیره کرده است. می‌توانید ویرایش یا حذف کنید.</p>
+    <div class="skills-grid">
+      <ul id="skill-list" class="skill-list"></ul>
+      <div class="skill-edit">
+        <input id="skill-name" dir="ltr" placeholder="skill-name" aria-label="نام مهارت">
+        <textarea id="skill-content" rows="14" dir="ltr" aria-label="محتوای SKILL.md"></textarea>
+        <p id="skill-error" class="error" role="alert"></p>
+        <div class="dlg-actions">
+          <button id="skill-save" class="btn primary" type="button">ذخیره</button>
+          <button id="skill-delete" class="btn danger" type="button">حذف</button>
+          <button id="skill-new" class="btn" type="button">مهارت جدید</button>
+          <button class="btn" value="cancel">بستن</button>
+        </div>
+      </div>
+    </div>
+  </form>
+</dialog>
+
+<script src="app.js"></script>
+</body>
+</html>

@@ -1,0 +1,51 @@
+# Dastyar configuration. API keys do NOT go here: put them in ~/.dastyar/.env
+# (e.g. ANTHROPIC_API_KEY=..., OPENROUTER_API_KEY=..., OPENAI_API_KEY=...).
+
+default_model: rc-local   # profile used for new chats
+cheap_model: rc-local      # titles / background review (falls back to the chat model)
+
+# always    -> ask before every terminal/file-write/python call
+# dangerous -> ask only for risky-looking calls (heuristic; not a security boundary)
+# never     -> never ask
+approval_mode: never
+
+host: 127.0.0.1                # non-local host requires DASTYAR_TOKEN
+port: 8765
+
+models:
+  - name: claude-sonnet
+    provider: anthropic
+    model: claude-sonnet-5-5
+    api_key_env: ANTHROPIC_API_KEY
+  - name: claude-opus
+    provider: anthropic
+    model: claude-opus-5-5
+    api_key_env: ANTHROPIC_API_KEY
+  - name: claude-haiku
+    provider: anthropic
+    model: claude-haiku-5-5
+    api_key_env: ANTHROPIC_API_KEY
+  - name: openrouter-auto
+    provider: openrouter          # any OpenRouter slug works in `model`
+    model: openrouter/auto
+    api_key_env: OPENROUTER_API_KEY
+  - name: openai
+    provider: openai              # set base_url to use any OpenAI-compatible endpoint
+    model: gpt-4o-mini            # change to the model you have access to
+    api_key_env: OPENAI_API_KEY
+  - name: rc-local
+    provider: openai
+    model: deepseek
+    api_key_env: RC_API_KEY
+    base_url: http://127.0.0.1:3188/v1
+
+reviewer:
+  enabled: true
+  min_tool_calls: 5
+  every_n_turns: 10
+
+search:
+  provider: ddgs                  # ddgs (no key) | tavily | searxng
+
+
+

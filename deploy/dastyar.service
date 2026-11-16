@@ -1,0 +1,33 @@
+# Install (as root):
+#   useradd --system --create-home --home-dir /var/lib/dastyar dastyar
+#   python3 -m venv /opt/dastyar/.venv && /opt/dastyar/.venv/bin/pip install /path/to/dastyar
+#   install -m 600 -o dastyar /dev/null /etc/dastyar.env   # then put API keys + DASTYAR_TOKEN in it
+#   cp deploy/dastyar.service /etc/systemd/system/ && systemctl enable --now dastyar
+#
+# Keep it on 127.0.0.1 and reach it through an SSH tunnel or an HTTPS reverse proxy.
+[Unit]
+Description=Dastyar personal agent
+After=network-online.target
+Wants=network-online.target
+
+[Service]
+Type=simple
+User=dastyar
+Group=dastyar
+WorkingDirectory=/var/lib/dastyar
+Environment=DASTYAR_HOME=/var/lib/dastyar
+EnvironmentFile=/etc/dastyar.env
+ExecStart=/opt/dastyar/.venv/bin/dastyar serve --host 127.0.0.1 --port 8765
+Restart=on-failure
+RestartSec=3
+
+# The agent executes shell commands as this user, so keep its privileges small.
+NoNewPrivileges=true
+PrivateTmp=true
+# Optional hardening (limits what the agent can modify outside its data directory):
+# ProtectSystem=strict
+# ReadWritePaths=/var/lib/dastyar
+# ProtectHome=true
+
+[Install]
+WantedBy=multi-user.target

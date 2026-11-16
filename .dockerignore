@@ -1,0 +1,10 @@
+.git
+.venv
+.env
+tests
+deploy
+*.db
+__pycache__
+.pytest_cache
+.ruff_cache
+uv.lock

@@ -1,0 +1,24 @@
+# Python-generated files
+__pycache__/
+*.py[oc]
+build/
+dist/
+wheels/
+*.egg-info
+
+# Virtual environments
+.venv
+
+# Secrets and local data (never commit)
+.env
+.dastyar/
+*.db
+*.db-wal
+*.db-shm
+
+# Lock file is not committed: it is resolved against whichever PyPI index the machine can reach
+uv.lock
+
+# Tool caches
+.pytest_cache/
+.ruff_cache/

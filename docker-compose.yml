@@ -1,0 +1,12 @@
+services:
+  dastyar:
+    build: .
+    restart: unless-stopped
+    env_file: .env            # ANTHROPIC_API_KEY=..., DASTYAR_TOKEN=... (required)
+    ports:
+      - "127.0.0.1:8765:8765" # publish only to localhost; use SSH tunnel or an HTTPS proxy
+    volumes:
+      - dastyar-data:/data
+
+volumes:
+  dastyar-data:
